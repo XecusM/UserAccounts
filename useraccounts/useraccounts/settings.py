@@ -122,3 +122,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [SATAIC_DIR]
+
+# Edit user accounts database
+AUTH_USER_MODEL = 'UserProfile.User'
+LOGOUT_REDIRECT_URL = 'index'
+
+# email sever settings
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

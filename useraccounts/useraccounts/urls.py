@@ -15,8 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.views.generic.base import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('userprofile/',include('userprofile.urls')),
+    path('users/',include('userprofile.urls')),
+    path('',TemplateView.as_view(template_name='index.html'),name='index'),
 ]
+
+# error handlers
+handler404 = TemplateView.as_view(template_name='error_pages/404.html')
+handler400 = TemplateView.as_view(template_name='error_pages/400.html')
+handler500 = TemplateView.as_view(template_name='error_pages/500.html')
+handler403 = TemplateView.as_view(template_name='error_pages/403.html')
