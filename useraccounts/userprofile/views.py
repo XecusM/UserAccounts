@@ -28,7 +28,7 @@ from .models import User
 
 class SignUp(CreateView):
     form_class = forms.UserSignUp
-    template_name = 'UserProfile/sign-up.html'
+    template_name = 'userprofile/sign-up.html'
 
     def form_valid(self, form):
         user=form.save()
@@ -37,7 +37,7 @@ class SignUp(CreateView):
 
 
 class UpdateProfile(LoginRequiredMixin,UpdateView):
-    template_name = 'UserProfile/edit-profile.html'
+    template_name = 'userprofile/edit-profile.html'
     model = User
     form_class = forms.UserProfileForm
 
@@ -51,75 +51,21 @@ class UpdateProfile(LoginRequiredMixin,UpdateView):
         if self.request.user.email != self.email:
             self.request.user.is_email_verified=False
             print('email changed')
-            return reverse_lazy('UserProfile:verification_email_sent')
+            return reverse_lazy('userprofile:verification_email_sent')
 
         elif self.request.user.is_email_verified==False:
             print('email not verfied')
-            return reverse_lazy('UserProfile:verification_email_sent')
+            return reverse_lazy('userprofile:verification_email_sent')
 
-        username=self.request.user.pk
-        return reverse_lazy('UserProfile:profile',kwargs={'username':username})
+        pk=self.request.user.pk
+        return reverse_lazy('userprofile:profile',kwargs={'pk':pk})
 
 
 class ViewProfile(LoginRequiredMixin,TemplateView):
-    template_name = 'UserProfile/profile.html'
-
+    template_name = 'userprofile/profile.html'
 
 class LogStatus(TemplateView):
-    template_name='UserProfile/log-status.html'
-
-class LogoutMyView(LogoutView):
-
-
-    def __init_(self):
-        try:
-            del self.request.session['heurisitc']
-            del self.request.session['data_analysis']
-        except:
-            pass
-
-def user_login(request):
-    # messege = {'messege':'','color': 'white'}
-    messege = {'messege':'','status':''}
-    if request.method == 'POST':
-        # First get the username and password supplied
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
-        # Django's built-in authentication function:
-        user_authentication = authenticate(username=username, password=password)
-        # If we have a user
-        if User.objects.filter(username=username).exists():
-            #Check it the account is active
-            user = User.objects.get(username=username)
-            if user.is_active:
-                # Log the user in.
-                try:
-                    login(request,user_authentication)
-                    request.session['heuristic']={'function':{},'test':{},'settings':{},'results':{}}
-                    request.session['data_analysis']={}
-                except:
-                    # if username and password didn't match
-                    messege['status']='reject'
-                    return render(request,'UserProfile/log-status.html',messege)
-                # Send the user back to some page.
-                # In this case their homepage.
-                # return HttpResponseRedirect(reverse('index'))
-                print(request.scheme+request.get_host())
-                return HttpResponseRedirect(request.get_full_path())
-            else:
-                # If account is not active:
-                messege['status']='not active'
-                send_activation_email(request,user)
-                return render(request,'UserProfile/log-status.html',messege)
-        else:
-            # if username and password didn't match
-            messege['status']='not exist'
-            return render(request,'UserProfile/log-status.html',messege)
-
-    else:
-
-        return render(request,'index.html')
+    template_name='userprofile/log-status.html'
 
 def send_activation_email(request,user):
     text_content = 'Account Activation Email'

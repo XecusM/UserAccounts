@@ -124,7 +124,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [SATAIC_DIR]
 
 # Edit user accounts database
-AUTH_USER_MODEL = 'UserProfile.User'
+AUTH_USER_MODEL = 'userprofile.User'
 LOGOUT_REDIRECT_URL = 'index'
 
 # email sever settings
