@@ -77,7 +77,7 @@ def SendActivationEmail(request,user):
         'uidb64': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
         'token': default_token_generator.make_token(user)
     }
-    activation_url = reverse('UserProfile:ActivateUserAccount', kwargs=kwargs)
+    activation_url = reverse('userprofile:ActivateUserAccount', kwargs=kwargs)
 
     activate_url = "{0}://{1}{2}".format(request.scheme, request.get_host(), activation_url)
 
@@ -91,7 +91,7 @@ def SendActivationEmail(request,user):
     email.send()
     print('email sent')
 
-    return redirect('UserProfile:VerificationEmailSent')
+    return redirect('userprofile:VerificationEmailSent')
 
 def ActivateUserAccount(request, uidb64=None, token=None):
     try:
@@ -104,7 +104,7 @@ def ActivateUserAccount(request, uidb64=None, token=None):
         user.is_active = True
         user.save()
         login(request, user)
-        return redirect('UserProfile:activation_done')
+        return redirect('userprofile:activation_done')
     else:
         return HttpResponse("Activation link has expired")
 
@@ -119,7 +119,7 @@ def SnedVerificationEmail(request):
         'uidb64': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
         'token': default_token_generator.make_token(user)
     }
-    verification_url = reverse('UserProfile:EmailVerification', kwargs=kwargs)
+    verification_url = reverse('userprofile:EmailVerification', kwargs=kwargs)
 
     verification_url = "{0}://{1}{2}".format(request.scheme, request.get_host(), verification_url)
 
@@ -133,7 +133,7 @@ def SnedVerificationEmail(request):
     email.send()
     print('email sent')
 
-    return redirect('UserProfile:VerificationEmailSent')
+    return redirect('userprofile:VerificationEmailSent')
 
 def EmailVerification(request, uidb64=None, token=None):
     try:
@@ -145,6 +145,6 @@ def EmailVerification(request, uidb64=None, token=None):
         user.is_email_verified = True
         user.save()
         login(request, user)
-        return redirect('UserProfile:VerificationEmailDone')
+        return redirect('userprofile:VerificationEmailDone')
     else:
         return HttpResponse("Activation link has expired")

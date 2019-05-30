@@ -53,10 +53,10 @@ class User(AbstractBaseUser,PermissionsMixin):
     last_name=models.CharField(max_length=128)
     gender=models.CharField(max_length=1,choices=gender_choices,blank=True)
     joined_at=models.DateField(auto_now_add=True,blank=False)
-    is_superuser=models.BooleanField()
+    is_superuser=models.BooleanField(default=False)
     is_active=models.BooleanField(default=True)
-    is_email_verified=models.BooleanField()
-    is_staff=models.BooleanField()
+    is_email_verified=models.BooleanField(default=False)
+    is_staff=models.BooleanField(default=False)
 
     objects = UserManager()
 
