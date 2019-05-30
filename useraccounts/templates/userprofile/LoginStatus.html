@@ -1,4 +1,4 @@
-<!-- UserProfile Log Status -->
+<!-- userprofile Login Status -->
 {% extends 'base.html' %}
 {% block content %}
 <div class="container">
@@ -6,7 +6,7 @@
     {% if status == 'reject' %}
       <h1 class="text-center" id='thoth'>Invalid login details supplied.</h1>
       <p class="text-center">If you for get your password please click on the link below</p>
-      <h2 class="text-center"><a href="{% url 'UserProfile:reset_password' %}">Forget Password</a></h2>
+      <h2 class="text-center"><a href="{% url 'userprofile:PasswordReset' %}">Forget Password</a></h2>
     {% elif status == 'not exist' %}
       <h1 class="text-center" id='thoth'>User does not exist.</h1>
     {% elif status == 'not active' %}

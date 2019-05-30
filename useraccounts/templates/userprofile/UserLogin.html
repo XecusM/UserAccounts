@@ -1,0 +1,23 @@
+<!-- userprofile Registration -->
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block content %}
+<div class="container col-6">
+    <div class="jumbotron">
+      {% if user.is_authenticated %}
+      <script type="text/javascript">setTimeout(function() {window.location.href = "/";});</script>
+      {% else %}
+      <h1 class='head'>Login</h1>
+      <hr>
+      <br>
+      <form method="POST">
+          {% csrf_token %}
+          {% bootstrap_form form %}
+          <br>
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Login</button>
+      </form>
+      {% endif %}
+    </div>
+</div>
+{% endblock %}

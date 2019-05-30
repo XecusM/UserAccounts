@@ -1,4 +1,4 @@
-<!-- UserProfile profile -->
+<!-- userprofile profile -->
 {% extends 'base.html' %}
 {% load bootstrap4 %}
 
@@ -13,7 +13,7 @@
       <h2>Username: {{ user.username }}</h2>
       <h2>Email: {{ user.email }}</h2>
       {% if user.is_active and not user.is_email_verified %}
-        <p>Your email is not verified. <a href="{% url 'UserProfile:verification_email_sent' %}">Verify</a></p>
+        <p>Your email is not verified. <a href="{% url 'userprofile:VerificationEmailSent' %}">Verify</a></p>
       {% endif %}
       <h2>Joined at: {{ user.joined_at }}</h2>
       {% if not user.is_active %}
@@ -21,7 +21,7 @@
       <p>Your account is not active.</p>
       {% endif %}
       <br>
-      <a class="btn btn-outline-success my-2 my-sm-0 float-right" href="{% url 'UserProfile:edit_profile' username=user.pk %}">Edit Your Profile</a>
+      <a class="btn btn-outline-success my-2 my-sm-0 float-right" href="{% url 'userprofile:UserProfileEdit' pk=user.pk %}">Edit Your Profile</a>
       <br>
     </div>
 

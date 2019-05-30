@@ -1,21 +1,21 @@
-<!-- UserProfile SignUp -->
+<!-- userprofile Edit User profile -->
 {% extends 'base.html' %}
 {% load bootstrap4 %}
 
 {% block content %}
 <div class="container col-6">
     <div class="jumbotron">
-      <h1 class='head'>Sign-Up</h1>
+      <h1 class='head'>Edit Profile</h1>
       <hr>
       <br>
       <form method="POST">
           {% csrf_token %}
           {% bootstrap_form form %}
-          <script src='https://www.google.com/recaptcha/api.js'></script>
-          <div class="g-recaptcha" data-sitekey="6LdvCpUUAAAAAFqFNSezRCRmKKD0nq6COAET0JZT"></div>
+          <a class="btn btn-outline-success my-2 my-sm-0 float-right" href="{% url 'userprofile:PasswordChange' pk=user.pk %}">Change Password</a>
           <br>
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Save</button>
       </form>
     </div>
+
 </div>
 {% endblock %}

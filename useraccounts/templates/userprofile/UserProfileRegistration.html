@@ -1,0 +1,25 @@
+<!-- userprofile Registration -->
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block content %}
+<div class="container col-6">
+    <div class="jumbotron">
+      {% if user.is_authenticated %}
+      <script type="text/javascript">setTimeout(function() {window.location.href = "/";});</script>
+      {% else %}
+      <h1 class='head'>Registration</h1>
+      <hr>
+      <br>
+      <form method="POST">
+          {% csrf_token %}
+          {% bootstrap_form form %}
+          <script src='https://www.google.com/recaptcha/api.js'></script>
+          <div class="g-recaptcha" data-sitekey="6LdvCpUUAAAAAFqFNSezRCRmKKD0nq6COAET0JZT"></div>
+          <br>
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Save</button>
+      </form>
+      {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -28,16 +28,16 @@ from .models import User
 
 class SignUp(CreateView):
     form_class = forms.UserSignUp
-    template_name = 'userprofile/sign-up.html'
+    template_name = 'userprofile/UserProfileRegistration.html'
 
     def form_valid(self, form):
         user=form.save()
         user.save()
-        return send_activation_email(self.request,user)
+        return SendActivationEmail(self.request,user)
 
 
 class UpdateProfile(LoginRequiredMixin,UpdateView):
-    template_name = 'userprofile/edit-profile.html'
+    template_name = 'userprofile/UserProfileEdit.html'
     model = User
     form_class = forms.UserProfileForm
 
@@ -51,33 +51,33 @@ class UpdateProfile(LoginRequiredMixin,UpdateView):
         if self.request.user.email != self.email:
             self.request.user.is_email_verified=False
             print('email changed')
-            return reverse_lazy('userprofile:verification_email_sent')
+            return reverse_lazy('userprofile:VerificationEmailSent')
 
         elif self.request.user.is_email_verified==False:
             print('email not verfied')
-            return reverse_lazy('userprofile:verification_email_sent')
+            return reverse_lazy('userprofile:VerificationEmailSent')
 
         pk=self.request.user.pk
         return reverse_lazy('userprofile:profile',kwargs={'pk':pk})
 
 
 class ViewProfile(LoginRequiredMixin,TemplateView):
-    template_name = 'userprofile/profile.html'
+    template_name = 'userprofile/UserProfileDetails.html'
 
 class LogStatus(TemplateView):
-    template_name='userprofile/log-status.html'
+    template_name='userprofile/LoginStatus.html'
 
-def send_activation_email(request,user):
+def SendActivationEmail(request,user):
     text_content = 'Account Activation Email'
     subject = 'Email Activation'
-    template_name = 'registration/user-activation.html'
+    template_name = 'registration/ActivationEmailContent.html'
     from_email = settings.DEFAULT_FROM_EMAIL
     recipients = [user.email]
     kwargs = {
         'uidb64': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
         'token': default_token_generator.make_token(user)
     }
-    activation_url = reverse('UserProfile:activate_user_account', kwargs=kwargs)
+    activation_url = reverse('UserProfile:ActivateUserAccount', kwargs=kwargs)
 
     activate_url = "{0}://{1}{2}".format(request.scheme, request.get_host(), activation_url)
 
@@ -91,9 +91,9 @@ def send_activation_email(request,user):
     email.send()
     print('email sent')
 
-    return redirect('UserProfile:activation_email_sent')
+    return redirect('UserProfile:VerificationEmailSent')
 
-def activate_user_account(request, uidb64=None, token=None):
+def ActivateUserAccount(request, uidb64=None, token=None):
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
@@ -108,18 +108,18 @@ def activate_user_account(request, uidb64=None, token=None):
     else:
         return HttpResponse("Activation link has expired")
 
-def send_verification_email(request):
+def SnedVerificationEmail(request):
     user=request.user
     text_content = 'Verification Email'
     subject = 'Email Verification'
-    template_name = 'registration/email-verification.html'
+    template_name = 'registration/VerificationEmailContent.html'
     from_email = settings.DEFAULT_FROM_EMAIL
     recipients = [user.email]
     kwargs = {
         'uidb64': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
         'token': default_token_generator.make_token(user)
     }
-    verification_url = reverse('UserProfile:email_verification', kwargs=kwargs)
+    verification_url = reverse('UserProfile:EmailVerification', kwargs=kwargs)
 
     verification_url = "{0}://{1}{2}".format(request.scheme, request.get_host(), verification_url)
 
@@ -133,9 +133,9 @@ def send_verification_email(request):
     email.send()
     print('email sent')
 
-    return redirect('UserProfile:activation_email_sent')
+    return redirect('UserProfile:VerificationEmailSent')
 
-def email_verification(request, uidb64=None, token=None):
+def EmailVerification(request, uidb64=None, token=None):
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
@@ -145,6 +145,6 @@ def email_verification(request, uidb64=None, token=None):
         user.is_email_verified = True
         user.save()
         login(request, user)
-        return redirect('UserProfile:verification-done')
+        return redirect('UserProfile:VerificationEmailDone')
     else:
         return HttpResponse("Activation link has expired")
