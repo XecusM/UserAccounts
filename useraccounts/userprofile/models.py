@@ -16,6 +16,7 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError('User must have an email address')
 
+        email = self.normalize_email(email)
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
@@ -26,13 +27,12 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', False)
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_email_verified', False)
-
         return self._create_user(username, email, password, **extra_fields)
 
     def create_superuser(self, username, email, password, **extra_fields):
-        extra_fields.setdefault('is_active', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_active', True)
         extra_fields.setdefault('is_email_verified', True)
 
         if extra_fields.get('is_superuser') is not True:
@@ -40,7 +40,7 @@ class UserManager(BaseUserManager):
 
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
-
+            
         return self._create_user(username, email, password, **extra_fields)
 
 class User(AbstractBaseUser,PermissionsMixin):
@@ -55,10 +55,10 @@ class User(AbstractBaseUser,PermissionsMixin):
     last_name=models.CharField(max_length=128)
     gender=models.CharField(max_length=1,choices=gender_choices,blank=True)
     joined_at=models.DateField(auto_now_add=True,blank=False)
-    is_superuser=models.BooleanField()
-    is_active=models.BooleanField()
-    is_email_verified=models.BooleanField()
-    is_staff=models.BooleanField()
+    is_superuser=models.BooleanField(default = False)
+    is_active=models.BooleanField(default = False)
+    is_email_verified=models.BooleanField(default = False)
+    is_staff=models.BooleanField(default = False)
 
     objects = UserManager()
 
