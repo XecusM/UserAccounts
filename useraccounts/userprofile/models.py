@@ -40,7 +40,7 @@ class UserManager(BaseUserManager):
 
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
-            
+
         return self._create_user(username, email, password, **extra_fields)
 
 class User(AbstractBaseUser,PermissionsMixin):
@@ -64,6 +64,19 @@ class User(AbstractBaseUser,PermissionsMixin):
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email','first_name','last_name']
+
+    original_email = None
+
+    def __init__(self, *args, **kwargs):
+        super(User, self).__init__(*args, **kwargs)
+        self.original_email = self.email
+
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        if self.email != self.original_email:
+          self.is_email_verified = False
+
+        super(User, self).save(force_insert, force_update, *args, **kwargs)
+        self.original_email = self.email
 
     def get_full_name(self):
         '''

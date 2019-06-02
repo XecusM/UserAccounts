@@ -48,17 +48,11 @@ class UpdateProfile(LoginRequiredMixin,UpdateView):
         return self.request.user
 
     def get_success_url(self):
-        if self.request.user.email != self.email:
-            self.request.user.is_email_verified=False
-            print('email changed')
-            return reverse_lazy('userprofile:VerificationEmailSent')
-
-        elif self.request.user.is_email_verified==False:
-            print('email not verfied')
-            return reverse_lazy('userprofile:VerificationEmailSent')
-
-        pk=self.request.user.pk
-        return reverse_lazy('userprofile:profile',kwargs={'pk':pk})
+        if self.request.user.is_email_verified==False:
+            return SnedVerificationEmail(self.request,self.request.user)
+        else:
+            pk=self.request.user.pk
+            return reverse_lazy('userprofile:profile',kwargs={'pk':pk})
 
 
 class ViewProfile(LoginRequiredMixin,TemplateView):
@@ -91,7 +85,7 @@ def SendActivationEmail(request,user):
     email.send()
     print('email sent')
 
-    return redirect('userprofile:VerificationEmailSent')
+    return redirect('userprofile:ActivationEmailSent')
 
 def ActivateUserAccount(request, uidb64=None, token=None):
     try:
@@ -108,8 +102,7 @@ def ActivateUserAccount(request, uidb64=None, token=None):
     else:
         return HttpResponse("Activation link has expired")
 
-def SnedVerificationEmail(request):
-    user=request.user
+def SnedVerificationEmail(request,user):
     text_content = 'Verification Email'
     subject = 'Email Verification'
     template_name = 'registration/VerificationEmailContent.html'
@@ -133,7 +126,7 @@ def SnedVerificationEmail(request):
     email.send()
     print('email sent')
 
-    return redirect('userprofile:VerificationEmailSent')
+    return reverse_lazy('userprofile:VerificationEmailSent')
 
 def EmailVerification(request, uidb64=None, token=None):
     try:
