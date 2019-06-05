@@ -22,14 +22,17 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_user(self, username, email, password=None, **extra_fields):
+    def create_user(self, username, email,
+                    password=None, **extra_fields):
         extra_fields.setdefault('is_active', False)
         extra_fields.setdefault('is_superuser', False)
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_email_verified', False)
-        return self._create_user(username, email, password, **extra_fields)
+        return self._create_user(username, email,
+                                password, **extra_fields)
 
-    def create_superuser(self, username, email, password, **extra_fields):
+    def create_superuser(self, username, email,
+                        password, **extra_fields):
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_active', True)
@@ -41,7 +44,8 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
 
-        return self._create_user(username, email, password, **extra_fields)
+        return self._create_user(username, email,
+                                 password, **extra_fields)
 
 class User(AbstractBaseUser,PermissionsMixin):
     '''
@@ -53,7 +57,6 @@ class User(AbstractBaseUser,PermissionsMixin):
     email=models.CharField(max_length=256,unique=True)
     first_name=models.CharField(max_length=128)
     last_name=models.CharField(max_length=128)
-    gender=models.CharField(max_length=1,choices=gender_choices,blank=True)
     joined_at=models.DateField(auto_now_add=True,blank=False)
     is_superuser=models.BooleanField(default = False)
     is_active=models.BooleanField(default = False)

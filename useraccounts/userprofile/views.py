@@ -7,7 +7,7 @@ from django.utils.functional import lazy
 from django.http import HttpResponse, HttpResponseRedirect
 # imports for user activation
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.views import LogoutView
+from django.contrib.auth.views import LogoutView, LoginView
 from django.conf import settings
 from django.utils.encoding import force_bytes
 from django.utils.encoding import force_text
