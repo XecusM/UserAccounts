@@ -8,6 +8,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 # imports for user activation
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LogoutView, LoginView
+from django.contrib.auth.forms import AuthenticationForm
 from django.conf import settings
 from django.utils.encoding import force_bytes
 from django.utils.encoding import force_text
@@ -19,12 +20,33 @@ from django.http import HttpResponse, HttpRequest
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from django import forms as django_forms
+from django.contrib import messages
 # UserProfile forms and models
 from . import forms
 from .models import User
 
 
 # Create your views here.
+
+class SingIn(LoginView):
+    template_name = 'userprofile/UserLogin.html'
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        try:
+            user = User.objects.get(username = self.request.POST.get('username'))
+            if not user.is_active:
+                content = {'error_message' : 'Inactive',
+                            'UnUser': user}
+                SendActivationEmail(self.request,user)
+                return render(request, 'userprofile/ActivationError.html',content)
+        except:
+            pass
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
 class SignUp(CreateView):
     form_class = forms.UserSignUp
@@ -49,7 +71,7 @@ class UpdateProfile(LoginRequiredMixin,UpdateView):
 
     def get_success_url(self):
         if self.request.user.is_email_verified==False:
-            return SnedVerificationEmail(self.request,self.request.user)
+            return SendVerificationEmail(self.request,self.request.user)
         else:
             pk=self.request.user.pk
             return reverse_lazy('userprofile:profile',kwargs={'pk':pk})
@@ -102,7 +124,7 @@ def ActivateUserAccount(request, uidb64=None, token=None):
     else:
         return HttpResponse("Activation link has expired")
 
-def SnedVerificationEmail(request,user):
+def SendVerificationEmail(request,user):
     text_content = 'Verification Email'
     subject = 'Email Verification'
     template_name = 'registration/VerificationEmailContent.html'

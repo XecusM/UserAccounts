@@ -1,10 +1,15 @@
-<!-- userprofile Activation Error -->
+<!-- userprofile Login Status -->
 {% extends 'base.html' %}
 {% block content %}
 <div class="container">
   <div class="jumbotron">
-      <h1 class="text-center">Your account is not active.</h1>
-      <p class="text-center">An activation email sent to your registred email. If you cannot activate your acccount please contact admin.</p>
+    {% if error_message == 'Inactive' %}
+      <h1 class="text-center">{{ UnUser.username }} user is inactivate.</h1>
+      <p class="text-center">An activation email sent to your email.</p>
+      <script type="text/javascript">setTimeout(function() {window.location.href = "/users/login/";}, 5000);</script>
+    {% else %}
+      <script type="text/javascript">setTimeout(function() {window.location.href = "/";});</script>
+    {% endif %}
   </div>
 </div>
 {% endblock%}

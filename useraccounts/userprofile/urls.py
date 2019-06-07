@@ -12,17 +12,15 @@ app_name = 'userprofile'
 
  # patterns
 urlpatterns = [
-    path('login/',auth_views.LoginView.
-                as_view(template_name='userprofile/UserLogin.html'),
-                name='login'),
+    path('login/',views.SingIn.as_view(),name='login'),
     path('logout/',auth_views.LogoutView.as_view(),name='logout'),
     path('profile/change-password/<int:pk>/', auth_views.PasswordChangeView.
         as_view(template_name='userprofile/PasswordChange.html',
-                success_url=reverse_lazy('userprofile:password_changed'),
+                success_url=reverse_lazy('userprofile:PasswordChangeDone'),
                 form_class = forms.FormChangePassword),
                 name='PasswordChange'),
-    path('password-changed/',TemplateView.
-        as_view(template_name='userprofile/PasswordChangeDone.html'),
+    path('password-changed/',TemplateView.as_view(
+                template_name='userprofile/PasswordChangeDone.html'),
                 name='PasswordChangeDone'),
     path('reset-password/', auth_views.PasswordResetView.
         as_view(template_name='userprofile/PasswordResetEmail.html',
@@ -36,7 +34,6 @@ urlpatterns = [
         as_view(template_name='userprofile/PasswordReset.html',
                 success_url=reverse_lazy('index')),
         name='PasswordResetConfirm'),
-    path('logstatus/',views.LogStatus.as_view(),name='logstatus'),
     path('registration/',views.SignUp.as_view(),name='registration'),
     path('UserProfile/<int:pk>/',views.ViewProfile.as_view(),name='UserProfileDetails'),
     path('EditUserProfile/<int:pk>/',views.UpdateProfile.as_view(),name='UserProfileEdit'),
@@ -50,8 +47,8 @@ urlpatterns = [
         name='VerificationEmailSent'),
     path('verify/<uidb64>/<token>/',views.EmailVerification,
         name='EmailVerification'),
-    path('send-verification-email/<int:pk>/',views.SnedVerificationEmail,
-        name='SnedVerificationEmail'),
+    path('send-verification-email/<int:pk>/',views.SendVerificationEmail,
+        name='SendVerificationEmail'),
     path('activation-email-sent/',views.TemplateView.
         as_view(template_name='userprofile/ActivationEmailSent.html'),
         name='ActivationEmailSent'),
