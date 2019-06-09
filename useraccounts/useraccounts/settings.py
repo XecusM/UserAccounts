@@ -11,9 +11,10 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from . import useraccounts_settings as my_settings
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = my_settings.BASE_DIR
 TEMPLATES_DIR = os.path.join(BASE_DIR,'templates')
 SATAIC_DIR = os.path.join(BASE_DIR,'static')
 
@@ -22,12 +23,12 @@ SATAIC_DIR = os.path.join(BASE_DIR,'static')
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '@)*rs=*!-=ml5p!o@00@04r*g%$ah0&0y4(d58)l_7ln#uib@2'
+SECRET_KEY = my_settings.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = my_settings.DEBUG
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = my_settings.ALLOWED_HOSTS
 
 
 # Application definition
@@ -77,12 +78,7 @@ WSGI_APPLICATION = 'useraccounts.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'UserAccountsdb.sqlite3'),
-    }
-}
+DATABASES = my_settings.DATABASES
 
 
 # Password validation
@@ -123,6 +119,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [SATAIC_DIR]
+STATIC_ROOT = my_settings.STATIC_ROOT
 
 # Edit user accounts database
 AUTH_USER_MODEL = 'userprofile.User'
@@ -130,4 +127,13 @@ LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
 
 # email sever settings
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = my_settings.EMAIL_BACKEND
+EMAIL_HOST = my_settings.EMAIL_HOST
+EMAIL_HOST_USER = my_settings.EMAIL_HOST_USER
+EMAIL_PORT = my_settings.EMAIL_PORT
+EMAIL_HOST_PASSWORD = my_settings.EMAIL_HOST_PASSWORD
+EMAIL_USE_TLS = my_settings.EMAIL_USE_TLS
+EMAIL_USE_SSL = my_settings.EMAIL_USE_SSL
+
+# Google reCaptcha settings
+GOOGLE_RECAPTCHA_SECRET_KEY = my_settings.GOOGLE_RECAPTCHA_SECRET_KEY
