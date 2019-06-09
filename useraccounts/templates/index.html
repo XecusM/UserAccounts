@@ -1,6 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
   <div class="jumbotron">
-    <p>UserAccounts website is a dominstate the capabilities of User accounts on any web service</p>
+    {% if user.is_authenticated %}
+      <p>UserAccounts website have the following capabilities:</p>
+      <ul>
+        <li>Registration</li>
+        <li>Email Confirmaiton</li>
+        <li>Account Activation</li>
+        <li>Email Verification</li>
+        <li>Reset Password</li>
+      </ul>
+    {% else %}
+      <p>UserAccounts website is a dominstate the capabilities of User accounts on any web service</p>
+    {% endif %}
   </div>
+
 {% endblock %}
