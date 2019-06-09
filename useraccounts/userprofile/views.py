@@ -1,6 +1,6 @@
 #userprofile views.py
 from django.shortcuts import render, redirect
-from django.views.generic import TemplateView, CreateView, UpdateView
+from django.views.generic import TemplateView, CreateView, UpdateView, RedirectView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.utils.functional import lazy
@@ -133,6 +133,18 @@ class ViewProfile(LoginRequiredMixin,TemplateView):
     # used template
     template_name = 'userprofile/UserProfileDetails.html'
 
+class VerificationEmailSending(LoginRequiredMixin,RedirectView):
+    '''
+    Class view for sending verification email
+    '''
+    # used template
+    # template_name = 'userprofile/VerificationEmailSending.html'
+    def get_redirect_url(self, *args, **kwargs):
+        '''
+        Method to get the redirect link after sending email
+        '''
+        # send a verification email
+        return SendVerificationEmail(self.request,self.request.user)
 
 def SendActivationEmail(request,user):
     '''

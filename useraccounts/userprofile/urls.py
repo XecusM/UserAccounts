@@ -62,8 +62,9 @@ urlpatterns = [
     path('verify/<uidb64>/<token>/',views.EmailVerification,
         name='EmailVerification'),
     # send verification email pattern
-    path('send-verification-email/<int:pk>/',views.SendVerificationEmail,
-        name='SendVerificationEmail'),
+    path('send-verification-email/<int:pk>/',
+            views.VerificationEmailSending.as_view(),
+            name='SendVerificationEmail'),
     # pattern to inform that user account activation email sent
     path('activation-email-sent/',views.TemplateView.
         as_view(template_name='userprofile/ActivationEmailSent.html'),
