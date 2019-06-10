@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import django_heroku
 from . import useraccounts_settings as my_settings
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -137,3 +138,6 @@ EMAIL_USE_SSL = my_settings.EMAIL_USE_SSL
 
 # Google reCaptcha settings
 GOOGLE_RECAPTCHA_SECRET_KEY = my_settings.GOOGLE_RECAPTCHA_SECRET_KEY
+
+# activate django-heroku application
+django_heroku.settings(locals())
