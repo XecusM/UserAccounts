@@ -125,6 +125,34 @@ class UpdateProfile(LoginRequiredMixin,UpdateView):
             # redirect to profile details
             return reverse_lazy('userprofile:profile',kwargs={'pk':pk})
 
+    def __init__(self, *args, **kwargs):
+        '''
+        Method for initial values and functions for the SignUp form class
+        '''
+        # get user data from User model
+        self.user = models.User.objects.get(username=kwargs['instance'])
+        # get the initial form class values
+        super(UserProfileForm, self).__init__(*args, **kwargs)
+        # Add the current email as the inital email
+        self.fields['email1'].initial = self.user.email
+        # Add the current email as the intial confirmed email
+        self.fields['email2'].initial = self.user.email
+        # Check if the email is veriified or not
+        if self.user.is_email_verified:
+            # give a notification for email confirmation
+            self.fields['email1'].help_text=('Your email is verified')
+        else:
+            # Give attention for email not confirmed
+            self.fields['email1'].help_text=(
+                                "ATTENTION YOUR EMAIL IS NOT Verified.")
+        # Add help text in the password field for change
+        self.fields['password'].help_text=(
+                    "Raw passwords are not stored, so there is no way to see "
+                    "this user's password, but you can change the password "
+                    "using <a href=\"{}\">this form</a>."
+                    .format(reverse(
+                        'userprofile:PasswordChange',
+                        kwargs={'pk':self.user.pk})))
 
 class ViewProfile(LoginRequiredMixin,TemplateView):
     '''
