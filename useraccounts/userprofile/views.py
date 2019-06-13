@@ -123,7 +123,7 @@ class UpdateProfile(LoginRequiredMixin,UpdateView):
             # get the user key
             pk=self.request.user.pk
             # redirect to profile details
-            return reverse_lazy('userprofile:profile',kwargs={'pk':pk})
+            return reverse_lazy('userprofile:UserProfileDetails',kwargs={'pk':pk})
 
 class ViewProfile(LoginRequiredMixin,TemplateView):
     '''
