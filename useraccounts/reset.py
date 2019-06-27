@@ -5,8 +5,9 @@ NOTE: This file must placed into the django project folder and run it by type "p
 import os, shutil, glob
 # Stopping paramter
 check=True
+delete_media=True
 # loop for input corection
-while check==True:
+while check:
     # check whether user want to continue or not
     print('This will delete all migraions include your database.')
     con = input('Do you want to continue [y/n]:')
@@ -57,6 +58,46 @@ while check==True:
                     print(file+' has been removed')
             except:
                 pass
+        while delete_media:
+            # check whether user want to deleter media files or not
+            mcon = input('Do you want to delete all media files? [y/n]:')
+            # alaysis the answer
+            if mcon=='n':
+                # quit
+                print('Your media files still remains.')
+                delete_media=False
+            elif mcon=='y':
+                # get media folder
+                mediapath = os.path.join(BASE_DIR,'media')
+                # get a list of all files and folders media contains
+                media_content = os.listdir(mediapath)
+                # create a new list for folders only
+                media_dirs=list()
+                # filter the list of all content to get the media folders only
+                for dir in media_content:
+                    if os.path.isdir(os.path.join(mediapath, dir)):
+                        media_dirs.append(dir)
+                # delete all files on the media root folder
+                for file in media_content:
+                    try:
+                        os.remove(os.path.join(mediapath,file))
+                        print(mediapath+'/'+file+' has been removed')
+                    except:
+                        pass
+                # clean up all folders
+                for dir in media_dirs:
+                    # get the folder path
+                    FolderDir=os.listdir(os.path.join(mediapath,dir))
+                    # delete all files on the media root subfolder
+                    for file in FolderDir:
+                        print(file)
+                        try:
+                            os.remove(os.path.join(mediapath,dir,file))
+                            print(mediapath+'/'+dir+'/'+file+' has been removed')
+                        except:
+                            pass
+                print('All media files have been removed')            
+                delete_media=False
         print('\nYour project has been reset.\nPlease migrate again before use.')
         check=False
     else:
