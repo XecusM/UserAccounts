@@ -6,10 +6,11 @@ from django.contrib.auth.forms import ( UserCreationForm,
                                         PasswordResetForm,
                                         SetPasswordForm,
                                         )
+from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.urls import reverse
 from django import forms
-from . import models
+
 
 class UserSignUp(UserCreationForm):
     '''
@@ -39,7 +40,7 @@ class UserSignUp(UserCreationForm):
         '''
         fields = ('first_name', 'last_name', 'email1', 'email2',
                     'username', 'password1', 'password2')
-        model = models.User
+        model = get_user_model()
 
     def clean_email2(self):
         '''
@@ -47,9 +48,9 @@ class UserSignUp(UserCreationForm):
         This method works when confirmed email cleared
         '''
         # get the email from email field
-        email1 = self.cleaned_data.get("email1")
+        email1 = BaseUserManager.normalize_email(self.cleaned_data.get("email1"))
         # get the email from confirmed email field
-        email2 = self.cleaned_data.get("email2")
+        email2 = BaseUserManager.normalize_email(self.cleaned_data.get("email2"))
         # check if both emails are equal
         if email1 and email2 and email1 != email2:
             # give an error message if emails not matches
@@ -66,7 +67,7 @@ class UserSignUp(UserCreationForm):
         # initiate the method data
         super()._post_clean()
         # clean confirmed email
-        email = self.cleaned_data.get('email2')
+        email = BaseUserManager.normalize_email(self.cleaned_data.get('email2'))
 
     def save(self, commit=True):
         '''
@@ -77,12 +78,13 @@ class UserSignUp(UserCreationForm):
         # set the password on the model field
         user.set_password(self.cleaned_data["password1"])
         # set the email on the model field
-        user.email = self.cleaned_data["email1"]
+        user.email = BaseUserManager.normalize_email(self.cleaned_data["email1"])
         # save user data
         if commit:
             user.save()
         # return back user data
         return user
+
 
 class UserProfileForm(UserChangeForm):
     '''
@@ -111,8 +113,8 @@ class UserProfileForm(UserChangeForm):
         '''
         Initial fields and model for the form
         '''
-        fields = ('first_name','last_name','email1','email2')
-        model = models.User
+        fields = ('first_name', 'last_name', 'email1', 'email2')
+        model = get_user_model()
 
     # get current user data
     user = get_user_model()
@@ -123,9 +125,9 @@ class UserProfileForm(UserChangeForm):
         This method works when confirmed email cleared
         '''
         # get the email from email field
-        email1 = self.cleaned_data.get("email1")
+        email1 = BaseUserManager.normalize_email(self.cleaned_data.get("email1"))
         # get the email from confirmed email field
-        email2 = self.cleaned_data.get("email2")
+        email2 = BaseUserManager.normalize_email(self.cleaned_data.get("email2"))
         # check if both emails are equal
         if email1 and email2 and email1 != email2:
             # give an error message if emails not matches
@@ -142,7 +144,7 @@ class UserProfileForm(UserChangeForm):
         # initiate the method data
         super()._post_clean()
         # clean confirmed email
-        email = self.cleaned_data.get('email2')
+        email = BaseUserManager.normalize_email(self.cleaned_data.get('email2'))
 
     def save(self, commit=True):
         '''
@@ -151,7 +153,7 @@ class UserProfileForm(UserChangeForm):
         # get the initial method
         user = super().save(commit=False)
         # set the email on the model field
-        user.email = self.cleaned_data["email1"]
+        user.email = BaseUserManager.normalize_email(self.cleaned_data["email1"])
         # save edited user data
         if commit:
             user.save()
@@ -162,7 +164,7 @@ class UserProfileForm(UserChangeForm):
         Method for initial values and functions for the SignUp form class
         '''
         # get user data from User model
-        self.user = models.User.objects.get(username=kwargs['instance'])
+        self.user = get_user_model().objects.get(username=kwargs['instance'])
         # get the initial form class values
         super(UserProfileForm, self).__init__(*args, **kwargs)
         # Add the current email as the inital email
@@ -186,6 +188,7 @@ class UserProfileForm(UserChangeForm):
                         'userprofile:PasswordChange',
                         kwargs={'pk':self.user.pk})))
 
+
 class FormChangePassword(PasswordChangeForm):
     '''
     Change current password
@@ -198,6 +201,7 @@ class FormChangePassword(PasswordChangeForm):
         super(FormChangePassword, self).__init__(*args, **kwargs)
         # rename the label from old password to Current password
         self.fields['old_password'].label = ('Current Password')
+
 
 class FormRestPassword(PasswordResetForm):
     '''

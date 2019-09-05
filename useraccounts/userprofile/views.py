@@ -125,14 +125,14 @@ class UpdateProfile(LoginRequiredMixin,UpdateView):
             # redirect to profile details
             return reverse_lazy('userprofile:UserProfileDetails',kwargs={'pk':pk})
 
-class ViewProfile(LoginRequiredMixin,TemplateView):
+class ViewProfile(LoginRequiredMixin, TemplateView):
     '''
     Class view for profile details
     '''
     # used template
     template_name = 'userprofile/UserProfileDetails.html'
 
-class VerificationEmailSending(LoginRequiredMixin,RedirectView):
+class VerificationEmailSending(LoginRequiredMixin, RedirectView):
     '''
     Class view for sending verification email
     '''
@@ -174,7 +174,6 @@ def SendActivationEmail(request,user):
     email = EmailMultiAlternatives(subject, text_content, from_email, recipients)
     email.attach_alternative(html_content, 'text/html')
     email.send()
-    print('email sent')
     # return a sent email page after sending
     return redirect('userprofile:ActivationEmailSent')
 
@@ -235,7 +234,6 @@ def SendVerificationEmail(request,user):
     email = EmailMultiAlternatives(subject, text_content, from_email, recipients)
     email.attach_alternative(html_content, 'text/html')
     email.send()
-    print('email sent')
     # return a sent email page after sending
     return reverse_lazy('userprofile:VerificationEmailSent')
 

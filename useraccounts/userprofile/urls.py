@@ -13,9 +13,9 @@ app_name = 'userprofile'
  # patterns
 urlpatterns = [
     # login pattern
-    path('login/',views.SingIn.as_view(),name='login'),
+    path('login/', views.SingIn.as_view(),name='login'),
     # logout pattern
-    path('logout/',auth_views.LogoutView.as_view(),name='logout'),
+    path('logout/', auth_views.LogoutView.as_view(),name='logout'),
     # change password pattern
     path('profile/change-password/<int:pk>/', auth_views.PasswordChangeView.
         as_view(template_name='userprofile/PasswordChange.html',

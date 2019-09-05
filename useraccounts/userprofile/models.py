@@ -114,7 +114,7 @@ class User(AbstractBaseUser,PermissionsMixin):
         Used to get users full name.
         '''
         # return the user full name
-        return '{0} {1}'.format(self.first_name,self.last_name)
+        return f'{self.first_name} {self.last_name}'
 
     def __str__(self):
         '''
