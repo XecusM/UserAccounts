@@ -3,6 +3,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin,BaseUserManager
 
 # Create your models here.
+
+
 class UserManager(BaseUserManager):
     '''
     Helps Django work with our custom user model.
@@ -62,7 +64,8 @@ class UserManager(BaseUserManager):
         return self._create_user(username, email,
                                  password, **extra_fields)
 
-class User(AbstractBaseUser,PermissionsMixin):
+
+class User(AbstractBaseUser, PermissionsMixin):
     '''
     This a replaced user profile instead of the default django one
     '''

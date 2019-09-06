@@ -1,0 +1,38 @@
+/* font used */
+@font-face {
+   font-family: 'Bai Jamjuree', sans-serif;
+}
+/* main body style */
+body {
+  font-family: 'Bai Jamjuree';
+  background-color: #d2d8e0;
+}
+/* jumbotron style */
+.jumbotron{
+  background-color: #fbfcff;
+  margin-top: 100px;
+  margin-bottom: 100px;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+/* all headers */
+h1{
+  color: #6b5c58;
+}
+/* header navbar */
+#TopNavbar{
+  background-color: #2f4e68;
+  border-bottom: 7px solid #6b5c58;
+}
+/* footer navbar */
+#BottomNavbar{
+  background-color: #2f4e68;
+  border-top: 5px solid #6b5c58;
+  color: white;
+}
+/* github profile link */
+#github{
+  color: white;
+  font-size: 1.5rem;
+}

@@ -20,7 +20,7 @@ class TestModels(TestCase):
             username = 'xecus',
             first_name = 'Mohamed',
             last_name = 'Aboel-fotouh',
-            email = 'abo.elfotouh@live.com',
+            email = 'test@email.com',
             password = 'testpassword12345'
         )
         # Test New SuperUser default values
@@ -38,7 +38,7 @@ class TestModels(TestCase):
             username = 'xecusm',
             first_name = 'Mohamed',
             last_name = 'Aboel-fotouh',
-            email = 'xecus@aol.com',
+            email = 'tesst@email.com',
             password = 'testpassword12345'
         )
         # Test New User default values

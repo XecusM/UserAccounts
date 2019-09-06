@@ -23,14 +23,14 @@
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-          {% if user.is_authenticated %}
+          {% if request.user.is_authenticated %}
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'userprofile:UserProfileDetails' pk=user.pk %}">{{ user.get_full_name }}</a>
+            <a class="nav-link" href="{% url 'userprofile:UserProfileDetails' pk=request.user.pk %}">{{ user.get_full_name }}</a>
           </li>
           {% endif %}
         </ul>
         <ul class="navbar-nav my-2">
-          {% if user.is_authenticated %}
+          {% if request.user.is_authenticated %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'userprofile:logout' %}">Logout</a>
           </li>

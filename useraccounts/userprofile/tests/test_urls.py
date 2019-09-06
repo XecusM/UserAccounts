@@ -21,7 +21,7 @@ class UserProfilesUrlsTests(TestCase):
         self.user = get_user_model().objects.create_user(
                     username='xecus',
                     password='Testpass123',
-                    email='abo.elfotouh@live.com'
+                    email='test@email.com'
                     )
 
     def test_login_resolved(self):
