@@ -9,7 +9,9 @@ from django.contrib.auth.forms import ( UserCreationForm,
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.urls import reverse
+from django.conf import settings
 from django import forms
+from nocaptcha_recaptcha.fields import NoReCaptchaField
 
 
 class UserSignUp(UserCreationForm):
@@ -33,13 +35,15 @@ class UserSignUp(UserCreationForm):
         widget=forms.EmailInput,
         help_text="Enter the same email as before, for verification.",
     )
+    # reCaptcha field
+    captcha = NoReCaptchaField()
 
     class Meta:
         '''
         Initial fields and model for the form
         '''
         fields = ('first_name', 'last_name', 'email1', 'email2',
-                    'username', 'password1', 'password2')
+                    'username', 'password1', 'password2', 'captcha')
         model = get_user_model()
 
     def clean_email2(self):

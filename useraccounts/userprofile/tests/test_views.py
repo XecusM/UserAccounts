@@ -95,7 +95,7 @@ class UserProfilesViewsTests(TestCase):
                                     })
 
         self.assertRedirects(response,
-                            reverse('userprofile:ActivationEmailSent')
+                            redirect('userprofile:ActivationEmailSent')
                             )
 
     def test_user_profile_details_get(self):
@@ -185,7 +185,7 @@ class UserProfilesViewsTests(TestCase):
             'password1': self.password,
             'password2': self.password
         }
-        
+
         response = self.client.post(self.edit_profile_url, data=data)
 
         self.assertRedirects(response, self.profile_details_url)

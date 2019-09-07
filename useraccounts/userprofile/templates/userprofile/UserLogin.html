@@ -4,9 +4,6 @@
 
 {% block content %}
   <div class="jumbotron">
-    {% if user.is_authenticated %}
-    <script type="text/javascript">setTimeout(function() {window.location.href = "/";});</script>
-    {% else %}
     <h1 class='text-center'>Login</h1>
     <hr>
     <br>
@@ -18,7 +15,5 @@
     </form>
     <br>
     <h3 class="text-center"><a href="{% url 'userprofile:PasswordReset' %}">Forget Password</a></h3>
-    {% endif %}
   </div>
-
 {% endblock %}

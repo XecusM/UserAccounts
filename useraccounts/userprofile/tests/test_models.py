@@ -28,6 +28,10 @@ class TestModels(TestCase):
         self.assertTrue(self.SuperUser.is_active)
         self.assertTrue(self.SuperUser.is_email_verified)
         self.assertTrue(self.SuperUser.is_staff)
+        self.assertEqual(
+            self.SuperUser.get_full_name(),
+            f'{self.SuperUser.first_name} {self.SuperUser.last_name}'
+        )
 
     def test_create_user(self):
         '''
@@ -46,3 +50,7 @@ class TestModels(TestCase):
         self.assertFalse(self.User.is_active)
         self.assertFalse(self.User.is_email_verified)
         self.assertFalse(self.User.is_staff)
+        self.assertEqual(
+            self.User.get_full_name(),
+            f'{self.User.first_name} {self.User.last_name}'
+        )

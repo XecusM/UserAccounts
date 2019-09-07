@@ -3,6 +3,7 @@ from django.test import TestCase, Client
 from django.urls import reverse, resolve
 from django.contrib.auth import get_user_model
 
+from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 from userprofile import views
 
@@ -48,10 +49,14 @@ class UserProfilesUrlsTests(TestCase):
         '''
         self.client.force_login(self.user)
 
-        url = reverse('userprofile:PasswordChange',
-                                kwargs={'pk': self.user.pk})
-        self.assertEquals(resolve(url).func.view_class,
-                                auth_views.PasswordChangeView)
+        url = reverse(
+                    'userprofile:PasswordChange',
+                    kwargs={'pk': self.user.pk}
+                    )
+        self.assertEquals(
+                    resolve(url).func.view_class,
+                    views.PasswordChange
+                    )
 
     def test_reset_password_resolved(self):
         '''
@@ -59,7 +64,7 @@ class UserProfilesUrlsTests(TestCase):
         '''
         url = reverse('userprofile:PasswordReset')
         self.assertEquals(resolve(url).func.view_class,
-                                auth_views.PasswordResetView)
+                                views.PasswordReset)
 
     def test_reset_password_email_sent_resolved(self):
         '''
@@ -67,7 +72,7 @@ class UserProfilesUrlsTests(TestCase):
         '''
         url = reverse('userprofile:PasswordEmailSent')
         self.assertEquals(resolve(url).func.view_class,
-                                auth_views.PasswordResetDoneView)
+                                views.PasswordEmailSent)
 
     def test_reset_password_confirm_resolved(self):
         '''

@@ -31,7 +31,7 @@ class FormsTests(TestCase):
         '''
         expected = ['first_name', 'last_name',
                     'email1', 'email2', 'username',
-                    'password1', 'password2']
+                    'password1', 'password2', 'captcha']
 
         actual = list(forms.UserSignUp().fields)
 

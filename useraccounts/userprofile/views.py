@@ -5,6 +5,11 @@ from django.views.generic import (
                                 UpdateView, RedirectView,
                                 DetailView
                                 )
+from django.contrib.auth.views import (
+                                        PasswordChangeView,
+                                        PasswordResetDoneView,
+                                        PasswordResetView
+                                        )
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.utils.functional import lazy
@@ -23,18 +28,35 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 
 # UserProfile forms and models
+
 from . import forms
+
+
+# Help functions here
+
+def check_previous_view(self, url):
+    '''
+    Function to check the previous url with the expected ones
+    '''
+    previous_url = self.request.META.get('HTTP_REFERER')
+    expected_url = f'{self.request.scheme}://{self.request.get_host()}{url}'
+    return previous_url == expected_url
 
 
 # Create your views here.
 
-
-class SingIn(LoginView):
+class SingIn(UserPassesTestMixin, LoginView):
     '''
     Class view for login
     '''
     # used template
     template_name = 'userprofile/UserLogin.html'
+
+    def test_func(self):
+        '''
+        Check if user is authenticated or not
+        '''
+        return not self.request.user.is_authenticated
 
     def post(self, request, *args, **kwargs):
         '''
@@ -72,7 +94,7 @@ class SingIn(LoginView):
             return self.form_invalid(form)
 
 
-class SignUp(CreateView):
+class SignUp(UserPassesTestMixin, CreateView):
     '''
     Class view for registration
     '''
@@ -80,6 +102,12 @@ class SignUp(CreateView):
     form_class = forms.UserSignUp
     # used template
     template_name = 'userprofile/UserProfileRegistration.html'
+
+    def test_func(self):
+        '''
+        Check if user is authenticated or not
+        '''
+        return not self.request.user.is_authenticated
 
     def form_valid(self, form):
         '''
@@ -108,7 +136,12 @@ class UpdateProfile(UserPassesTestMixin, UpdateView):
     email = str()
 
     def test_func(self):
-        return self.request.user == get_user_model().objects.get(pk=self.kwargs['pk'])
+        '''
+        Check if the requested user is the same as the user object
+        '''
+        return self.request.user == get_user_model().objects.get(
+                                                        pk=self.kwargs['pk']
+                                                        )
 
     def get_object(self):
         '''
@@ -128,10 +161,11 @@ class UpdateProfile(UserPassesTestMixin, UpdateView):
             # send a verification email
             return SendVerificationEmail(self.request,self.request.user)
         else:
-            # get the user key
-            pk=self.request.user.pk
             # redirect to profile details
-            return reverse_lazy('userprofile:UserProfileDetails', kwargs={'pk':pk})
+            return reverse_lazy(
+                                'userprofile:UserProfileDetails',
+                                kwargs={'pk':self.request.user.pk}
+                                )
 
 
 class ViewProfile(UserPassesTestMixin, DetailView):
@@ -144,8 +178,89 @@ class ViewProfile(UserPassesTestMixin, DetailView):
     model = get_user_model()
 
     def test_func(self):
+        '''
+        Check if the requested user is the same as the user object
+        '''
         return self.request.user == get_user_model().objects.get(
-                                                        pk=self.kwargs['pk'])
+                                                        pk=self.kwargs['pk']
+                                                        )
+
+
+class PasswordChange(UserPassesTestMixin, PasswordChangeView):
+    '''
+    Class view for user change password
+    '''
+    # used template
+    template_name='userprofile/PasswordChange.html'
+    # View model
+    model = get_user_model()
+    # form class
+    form_class = forms.FormChangePassword
+    # success redirect url
+    success_url = reverse_lazy('userprofile:PasswordChangeDone')
+
+    def test_func(self):
+        '''
+        Check if the requested user is the same as the user object
+        '''
+        return self.request.user == get_user_model().objects.get(
+                                                        pk=self.kwargs['pk']
+                                                        )
+
+
+class PasswordChangeDone(UserPassesTestMixin, TemplateView):
+    '''
+    Class view for confirms that password changed successfully
+    '''
+    # used template
+    template_name='userprofile/PasswordChangeDone.html'
+
+    def test_func(self):
+        '''
+        Check if the previous url page was change password url
+        '''
+        return check_previous_view(
+                            self,
+                            reverse(
+                                    'userprofile:PasswordChange',
+                                    kwargs={'pk': self.request.user.pk}
+                                    )
+                            )
+
+
+class PasswordReset(UserPassesTestMixin, PasswordResetView):
+    '''
+    Class view to request a password reset
+    '''
+    # used template
+    template_name='userprofile/PasswordResetEmail.html'
+    # form used
+    form_class = forms.FormRestPassword
+    # success url
+    success_url=reverse_lazy('userprofile:PasswordEmailSent')
+
+    def test_func(self):
+        '''
+        Check if user is authenticated or not
+        '''
+        return not self.request.user.is_authenticated
+
+
+class PasswordEmailSent(UserPassesTestMixin, PasswordResetDoneView):
+    '''
+    Class view to confirm that password email has been sent
+    '''
+    # used template
+    template_name='userprofile/PasswordEmailSent.html'
+
+    def test_func(self):
+        '''
+        Check if the previous url page was passwrod reset url
+        '''
+        return check_previous_view(
+                            self,
+                            reverse('userprofile:PasswordReset')
+                            )
 
 
 class VerificationEmailSending(UserPassesTestMixin, RedirectView):
@@ -155,14 +270,65 @@ class VerificationEmailSending(UserPassesTestMixin, RedirectView):
 
     def test_func(self):
         return self.request.user == get_user_model().objects.get(
-                                                        pk=self.kwargs['pk'])
+                                                        pk=self.kwargs['pk']
+                                                        )
 
     def get_redirect_url(self, *args, **kwargs):
         '''
         Method to get the redirect link after sending email
         '''
         # send a verification email
-        return SendVerificationEmail(self.request,self.request.user)
+        return SendVerificationEmail(self.request, self.request.user)
+
+
+class VerificationEmailSent(LoginRequiredMixin, TemplateView):
+    '''
+    Class view to confirm that verfication email has been sent
+    '''
+    # used template
+    template_name = 'userprofile/VerificationEmailSent.html'
+
+
+class VerificationEmailDone(UserPassesTestMixin, TemplateView):
+    '''
+    Class view to confirm that email verfication email done
+    '''
+    # used template
+    template_name = 'userprofile/VerificationEmailDone.html'
+
+    def test_func(self):
+        '''
+        Check if user's email is verified or not
+        '''
+        return self.request.user.is_email_verified
+
+
+class ActivationEmailSent(UserPassesTestMixin, TemplateView):
+    '''
+    Class view to confirm that verfication email has been sent
+    '''
+    # used template
+    template_name = 'userprofile/ActivationEmailSent.html'
+
+    def test_func(self):
+        '''
+        Check if user is authenticated or not
+        '''
+        return not self.request.user.is_authenticated
+
+
+class ActivationDone(UserPassesTestMixin, TemplateView):
+    '''
+    Class view to confirm that user account is activated
+    '''
+    # used template
+    template_name = 'userprofile/ActivationDone.html'
+
+    def test_func(self):
+        '''
+        Check if user is activated or not
+        '''
+        return self.request.user.is_active
 
 
 def SendActivationEmail(request, user):
@@ -191,7 +357,10 @@ def SendActivationEmail(request, user):
     }
     # email sending settings
     html_content = render_to_string(template_name, context)
-    email = EmailMultiAlternatives(subject, text_content, from_email, recipients)
+    email = EmailMultiAlternatives(
+                                subject, text_content,
+                                from_email, recipients
+                                )
     email.attach_alternative(html_content, 'text/html')
     email.send()
     # return a sent email page after sending
@@ -221,7 +390,7 @@ def ActivateUserAccount(request, uidb64=None, token=None):
         # login the activated user
         login(request, user)
         # return to activation done page
-        return redirect('userprofile:activation_done')
+        return redirect('userprofile:ActivationDone')
     else:
         # redirect to token expired user data or token not available
         return HttpResponse("Activation link has expired")
@@ -253,7 +422,10 @@ def SendVerificationEmail(request, user):
     }
     # email sending settings
     html_content = render_to_string(template_name, context)
-    email = EmailMultiAlternatives(subject, text_content, from_email, recipients)
+    email = EmailMultiAlternatives(
+                                subject, text_content,
+                                from_email, recipients
+                                )
     email.attach_alternative(html_content, 'text/html')
     email.send()
     # return a sent email page after sending
@@ -281,7 +453,7 @@ def EmailVerification(request, uidb64=None, token=None):
         # login the user after email verification
         login(request, user)
         # return to email verification done page
-        return reverse_lazy('userprofile:VerificationEmailDone')
+        return redirect('userprofile:VerificationEmailDone')
     else:
         # redirect to token expired user data or token not available
         return HttpResponse('Activation link has expired')

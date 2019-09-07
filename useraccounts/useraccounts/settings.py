@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'nocaptcha_recaptcha',
     'bootstrap4',
     'userprofile.apps.UserprofileConfig',
 ]
@@ -141,6 +142,8 @@ EMAIL_USE_SSL = my_settings.EMAIL_USE_SSL
 
 # Google reCaptcha settings
 GOOGLE_RECAPTCHA_SECRET_KEY = my_settings.GOOGLE_RECAPTCHA_SECRET_KEY
+NORECAPTCHA_SITE_KEY = my_settings.GOOGLE_RECAPTCHA_SITE_KEY
+NORECAPTCHA_SECRET_KEY = my_settings.GOOGLE_RECAPTCHA_SECRET_KEY
 
 # activate django-heroku application
 django_heroku.settings(locals())
