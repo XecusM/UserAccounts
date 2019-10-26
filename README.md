@@ -2,8 +2,6 @@
 
 UserAccounts Django Project with custom user data, activation email and verfication email
 
-https://useraccounts-xecus.herokuapp.com/
-
 **ATTENTION**
 To use this project you have to modify the following variables in settings.py
 
