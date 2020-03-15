@@ -1,8 +1,11 @@
-#userprofile tests.py
+# userprofile tests.py
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 
 from userprofile import forms
+
+import os
+
 
 class FormsTests(TestCase):
     '''
@@ -10,10 +13,15 @@ class FormsTests(TestCase):
     '''
 
     def setUp(self):
+        '''
+        Initial method before all tests
+        '''
+        # disable recptcha application
+        os.environ['NORECAPTCHA_TESTING'] = 'True'
         self.client = Client()
         self.username = 'xecus'
         self.first_name = 'Mohamed'
-        self.last_name ='Aboel-fotouh'
+        self.last_name = 'Aboel-fotouh'
         self.password = 'Testpassword'
         self.email = 'abo.elfotouh@live.com'
 
@@ -23,15 +31,24 @@ class FormsTests(TestCase):
                                         last_name=self.last_name,
                                         email=self.email,
                                         password=self.password
-                                    )
+        )
+
+    def tearDown(self):
+        '''
+        Initial method after all tests
+        '''
+        # re-enable recaptcha application
+        del os.environ['NORECAPTCHA_TESTING']
 
     def test_user_signup_fields(self):
         '''
         Test user SignUp fields
         '''
-        expected = ['first_name', 'last_name',
+        expected = [
+                    'first_name', 'last_name',
                     'email1', 'email2', 'username',
-                    'password1', 'password2', 'captcha']
+                    'password1', 'password2', 'captcha'
+        ]
 
         actual = list(forms.UserSignUp().fields)
 
@@ -42,14 +59,15 @@ class FormsTests(TestCase):
         test user signup with valid data
         '''
         form = forms.UserSignUp(data={
-                                        'first_name': self.first_name,
-                                        'last_name': self.last_name,
-                                        'email1': 'xecus@OPENMAIL.cc',
-                                        'email2': 'xecus@OPENMAIL.cc',
-                                        'username': 'm.refaat',
-                                        'password1': self.password,
-                                        'password2': self.password
-                                        })
+                                    'first_name': self.first_name,
+                                    'last_name': self.last_name,
+                                    'email1': 'xecus@OPENMAIL.cc',
+                                    'email2': 'xecus@OPENMAIL.cc',
+                                    'username': 'm.refaat',
+                                    'password1': self.password,
+                                    'password2': self.password,
+                                    'g-recaptcha-response': 'PASSED'
+                                })
 
         self.assertTrue(form.is_valid())
 
@@ -64,47 +82,52 @@ class FormsTests(TestCase):
                                         'email2': 'xecus@OPENMAIL.cc',
                                         'username': 'm.refaat',
                                         'password1': self.password,
-                                        'password2': self.password
-                                        })
+                                        'password2': self.password,
+                                        'g-recaptcha-response': 'PASSED'
+                                    })
 
         form_first_name = forms.UserSignUp(data={
-                                        'first_name': '',
-                                        'last_name': self.last_name,
-                                        'email1': 'xecus@OPENMAIL.cc',
-                                        'email2': 'xecus@OPENMAIL.cc',
-                                        'username': 'm.refaat',
-                                        'password1': self.password,
-                                        'password2': self.password
+                                            'first_name': '',
+                                            'last_name': self.last_name,
+                                            'email1': 'xecus@OPENMAIL.cc',
+                                            'email2': 'xecus@OPENMAIL.cc',
+                                            'username': 'm.refaat',
+                                            'password1': self.password,
+                                            'password2': self.password,
+                                            'g-recaptcha-response': 'PASSED'
                                         })
 
         form_last_name = forms.UserSignUp(data={
-                                        'first_name': self.first_name,
-                                        'last_name': '',
-                                        'email1': 'xecus@OPENMAIL.cc',
-                                        'email2': 'xecus@OPENMAIL.cc',
-                                        'username': 'm.refaat',
-                                        'password1': self.password,
-                                        'password2': self.password
+                                            'first_name': self.first_name,
+                                            'last_name': '',
+                                            'email1': 'xecus@OPENMAIL.cc',
+                                            'email2': 'xecus@OPENMAIL.cc',
+                                            'username': 'm.refaat',
+                                            'password1': self.password,
+                                            'password2': self.password,
+                                            'g-recaptcha-response': 'PASSED'
                                         })
 
         form_username = forms.UserSignUp(data={
-                                        'first_name': self.first_name,
-                                        'last_name': self.last_name,
-                                        'email1': 'xecus@OPENMAIL.cc',
-                                        'email2': 'xecus@OPENMAIL.cc',
-                                        'username': self.username,
-                                        'password1': self.password,
-                                        'password2': self.password
+                                            'first_name': self.first_name,
+                                            'last_name': self.last_name,
+                                            'email1': 'xecus@OPENMAIL.cc',
+                                            'email2': 'xecus@OPENMAIL.cc',
+                                            'username': self.username,
+                                            'password1': self.password,
+                                            'password2': self.password,
+                                            'g-recaptcha-response': 'PASSED'
                                         })
 
         form_password = forms.UserSignUp(data={
-                                        'first_name': self.first_name,
-                                        'last_name': self.last_name,
-                                        'email1': 'xecus@OPENMAIL.cc',
-                                        'email2': 'xecus@OPENMAIL.cc',
-                                        'username': 'm.refaat',
-                                        'password1': self.password,
-                                        'password2': 'anotherpasssword'
+                                            'first_name': self.first_name,
+                                            'last_name': self.last_name,
+                                            'email1': 'xecus@OPENMAIL.cc',
+                                            'email2': 'xecus@OPENMAIL.cc',
+                                            'username': 'm.refaat',
+                                            'password1': self.password,
+                                            'password2': 'anotherpasssword',
+                                            'g-recaptcha-response': 'PASSED'
                                         })
 
         self.assertFalse(form_email.is_valid())
@@ -133,10 +156,10 @@ class FormsTests(TestCase):
         self.client.force_login(self.user)
 
         form = forms.UserProfileForm(data={
-                                        'first_name': self.first_name,
-                                        'last_name': self.last_name,
-                                        'email1': 'xecus@OPENMAIL.cc',
-                                        'email2': 'xecus@OPENMAIL.cc'
+                                            'first_name': self.first_name,
+                                            'last_name': self.last_name,
+                                            'email1': 'xecus@OPENMAIL.cc',
+                                            'email2': 'xecus@OPENMAIL.cc'
                                     }, instance=self.user)
 
         self.assertTrue(form.is_valid())
@@ -148,11 +171,11 @@ class FormsTests(TestCase):
         self.client.force_login(self.user)
 
         form_email = forms.UserProfileForm(data={
-                                        'first_name': self.first_name,
-                                        'last_name': self.last_name,
-                                        'email1': 'xecus2@OPENMAIL.cc',
-                                        'email2': 'xecus@OPENMAIL.cc'
-                                    }, instance=self.user)
+                                            'first_name': self.first_name,
+                                            'last_name': self.last_name,
+                                            'email1': 'xecus2@OPENMAIL.cc',
+                                            'email2': 'xecus@OPENMAIL.cc'
+                                        }, instance=self.user)
 
         form_first_name = forms.UserProfileForm(data={
                                         'first_name': '',
@@ -162,11 +185,11 @@ class FormsTests(TestCase):
                                     }, instance=self.user)
 
         form_last_name = forms.UserProfileForm(data={
-                                        'first_name': self.first_name,
-                                        'last_name': '',
-                                        'email1': self.email,
-                                        'email2': self.email
-                                    }, instance=self.user)
+                                                'first_name': self.first_name,
+                                                'last_name': '',
+                                                'email1': self.email,
+                                                'email2': self.email
+                                            }, instance=self.user)
 
         self.assertFalse(form_email.is_valid())
         self.assertFalse(form_first_name.is_valid())
@@ -179,10 +202,10 @@ class FormsTests(TestCase):
         self.client.force_login(self.user)
 
         form = forms.FormChangePassword(data={
-                                        'old_password': self.password,
-                                        'new_password1': 'newtestpassword',
-                                        'new_password2': 'newtestpassword',
-                                    }, user=self.user)
+                                            'old_password': self.password,
+                                            'new_password1': 'newtestpassword',
+                                            'new_password2': 'newtestpassword',
+                                        }, user=self.user)
 
         self.assertTrue(form.is_valid())
 
@@ -214,7 +237,7 @@ class FormsTests(TestCase):
 
         form = forms.FormRestPassword(data={
                                         'email': self.email
-                                        })
+                                    })
 
         self.assertTrue(form.is_valid())
 
@@ -224,6 +247,6 @@ class FormsTests(TestCase):
         '''
         form = forms.FormRestPassword(data={
                                         'email': 'xecus@openmail'
-                                        })
+                                    })
 
         self.assertFalse(form.is_valid())

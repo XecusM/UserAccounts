@@ -1,7 +1,10 @@
-#userprofile models.py
+# userprofile models.py
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin,BaseUserManager
-
+from django.contrib.auth.models import (
+                                        AbstractBaseUser,
+                                        PermissionsMixin,
+                                        BaseUserManager
+                                )
 # Create your models here.
 
 
@@ -41,11 +44,9 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_email_verified', False)
         # give defaults data to create user
-        return self._create_user(username, email,
-                                password, **extra_fields)
+        return self._create_user(username, email, password, **extra_fields)
 
-    def create_superuser(self, username, email,
-                        password, **extra_fields):
+    def create_superuser(self, username, email, password, **extra_fields):
         '''
         Method for super user data defaults
         '''
@@ -61,8 +62,7 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
         # give defaults data to create user
-        return self._create_user(username, email,
-                                 password, **extra_fields)
+        return self._create_user(username, email, password, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -70,15 +70,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     This a replaced user profile instead of the default django one
     '''
     # Create model fields
-    username=models.CharField(max_length=128,unique=True)
-    email=models.CharField(max_length=256,unique=True)
-    first_name=models.CharField(max_length=128)
-    last_name=models.CharField(max_length=128)
-    joined_at=models.DateField(auto_now_add=True,blank=False)
-    is_superuser=models.BooleanField(default = False)
-    is_active=models.BooleanField(default = False)
-    is_email_verified=models.BooleanField(default = False)
-    is_staff=models.BooleanField(default = False)
+    username = models.CharField(max_length=128, unique=True)
+    email = models.CharField(max_length=256, unique=True)
+    first_name = models.CharField(max_length=128)
+    last_name = models.CharField(max_length=128)
+    joined_at = models.DateField(auto_now_add=True, blank=False)
+    is_superuser = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
+    is_email_verified = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
 
     # include UserManager with this class model
     objects = UserManager()
@@ -86,7 +86,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # Choose the username field
     USERNAME_FIELD = 'username'
     # Choose the required fields
-    REQUIRED_FIELDS = ['email','first_name','last_name']
+    REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
 
     # give and empty variable for the old email
     original_email = None
@@ -106,7 +106,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         '''
         # check if the email doesn't changed
         if self.email != self.original_email:
-          self.is_email_verified = False
+            self.is_email_verified = False
         # get the inital method data
         super(User, self).save(force_insert, force_update, *args, **kwargs)
         # add the new email insrad of the current one

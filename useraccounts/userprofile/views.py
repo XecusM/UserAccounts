@@ -1,21 +1,20 @@
-#userprofile views.py
+# userprofile views.py
 from django.shortcuts import render, redirect
 from django.views.generic import (
                                 TemplateView, CreateView,
                                 UpdateView, RedirectView,
                                 DetailView
-                                )
+                            )
 from django.contrib.auth.views import (
                                         PasswordChangeView,
                                         PasswordResetDoneView,
                                         PasswordResetView
-                                        )
+                                    )
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.utils.functional import lazy
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 # imports for user activation
-from django.contrib.auth import login, logout
+from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
 from django.conf import settings
 from django.utils.encoding import force_bytes
@@ -25,7 +24,6 @@ from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth.tokens import default_token_generator
 from django.template.loader import render_to_string
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 
 # UserProfile forms and models
 
@@ -68,23 +66,24 @@ class SingIn(UserPassesTestMixin, LoginView):
         try:
             # assign user data to a variable
             user = get_user_model().objects.get(
-                    username = self.request.POST.get('username'))
+                                    username=self.request.POST.get('username'))
             # Check if the user is active
             if not user.is_active:
                 # build a content for page details
-                content = {'error_message' : 'Inactive',
-                            'UnUser': user}
+                content = {
+                            'error_message': 'Inactive',
+                            'UnUser': user
+                }
                 # send activation email
-                SendActivationEmail(self.request,user)
+                SendActivationEmail(self.request, user)
                 # display content data
                 return render(
                             request,
                             'userprofile/ActivationError.html',
-                            content
-                            )
-        except:
+                            content)
+        except Exception as error_type:
             # ignore if error occurs
-            pass
+            print(error_type)
         # check if form valid
         if form.is_valid():
             # get the valid method
@@ -140,15 +139,14 @@ class UpdateProfile(UserPassesTestMixin, UpdateView):
         Check if the requested user is the same as the user object
         '''
         return self.request.user == get_user_model().objects.get(
-                                                        pk=self.kwargs['pk']
-                                                        )
+                                                        pk=self.kwargs['pk'])
 
     def get_object(self):
         '''
         Method to get the data from the model
         '''
         # Get the current email from user model
-        self.email=self.request.user.email
+        self.email = self.request.user.email
         # return user data
         return self.request.user
 
@@ -157,15 +155,14 @@ class UpdateProfile(UserPassesTestMixin, UpdateView):
         Metho to redirect after a valid form
         '''
         # check if the email is verified
-        if self.request.user.is_email_verified==False:
+        if self.request.user.is_email_verified is False:
             # send a verification email
-            return SendVerificationEmail(self.request,self.request.user)
+            return SendVerificationEmail(self.request, self.request.user)
         else:
             # redirect to profile details
             return reverse_lazy(
                                 'userprofile:UserProfileDetails',
-                                kwargs={'pk':self.request.user.pk}
-                                )
+                                kwargs={'pk': self.request.user.pk})
 
 
 class ViewProfile(UserPassesTestMixin, DetailView):
@@ -182,8 +179,7 @@ class ViewProfile(UserPassesTestMixin, DetailView):
         Check if the requested user is the same as the user object
         '''
         return self.request.user == get_user_model().objects.get(
-                                                        pk=self.kwargs['pk']
-                                                        )
+                                                        pk=self.kwargs['pk'])
 
 
 class PasswordChange(UserPassesTestMixin, PasswordChangeView):
@@ -191,7 +187,7 @@ class PasswordChange(UserPassesTestMixin, PasswordChangeView):
     Class view for user change password
     '''
     # used template
-    template_name='userprofile/PasswordChange.html'
+    template_name = 'userprofile/PasswordChange.html'
     # View model
     model = get_user_model()
     # form class
@@ -204,8 +200,7 @@ class PasswordChange(UserPassesTestMixin, PasswordChangeView):
         Check if the requested user is the same as the user object
         '''
         return self.request.user == get_user_model().objects.get(
-                                                        pk=self.kwargs['pk']
-                                                        )
+                                                        pk=self.kwargs['pk'])
 
 
 class PasswordChangeDone(UserPassesTestMixin, TemplateView):
@@ -213,7 +208,7 @@ class PasswordChangeDone(UserPassesTestMixin, TemplateView):
     Class view for confirms that password changed successfully
     '''
     # used template
-    template_name='userprofile/PasswordChangeDone.html'
+    template_name = 'userprofile/PasswordChangeDone.html'
 
     def test_func(self):
         '''
@@ -223,9 +218,7 @@ class PasswordChangeDone(UserPassesTestMixin, TemplateView):
                             self,
                             reverse(
                                     'userprofile:PasswordChange',
-                                    kwargs={'pk': self.request.user.pk}
-                                    )
-                            )
+                                    kwargs={'pk': self.request.user.pk}))
 
 
 class PasswordReset(UserPassesTestMixin, PasswordResetView):
@@ -233,11 +226,11 @@ class PasswordReset(UserPassesTestMixin, PasswordResetView):
     Class view to request a password reset
     '''
     # used template
-    template_name='userprofile/PasswordResetEmail.html'
+    template_name = 'userprofile/PasswordResetEmail.html'
     # form used
     form_class = forms.FormRestPassword
     # success url
-    success_url=reverse_lazy('userprofile:PasswordEmailSent')
+    success_url = reverse_lazy('userprofile:PasswordEmailSent')
 
     def test_func(self):
         '''
@@ -251,7 +244,7 @@ class PasswordEmailSent(UserPassesTestMixin, PasswordResetDoneView):
     Class view to confirm that password email has been sent
     '''
     # used template
-    template_name='userprofile/PasswordEmailSent.html'
+    template_name = 'userprofile/PasswordEmailSent.html'
 
     def test_func(self):
         '''
@@ -259,8 +252,7 @@ class PasswordEmailSent(UserPassesTestMixin, PasswordResetDoneView):
         '''
         return check_previous_view(
                             self,
-                            reverse('userprofile:PasswordReset')
-                            )
+                            reverse('userprofile:PasswordReset'))
 
 
 class VerificationEmailSending(UserPassesTestMixin, RedirectView):
@@ -270,8 +262,7 @@ class VerificationEmailSending(UserPassesTestMixin, RedirectView):
 
     def test_func(self):
         return self.request.user == get_user_model().objects.get(
-                                                        pk=self.kwargs['pk']
-                                                        )
+                                                        pk=self.kwargs['pk'])
 
     def get_redirect_url(self, *args, **kwargs):
         '''
@@ -343,8 +334,8 @@ def SendActivationEmail(request, user):
     recipients = [user.email]
     # Create token for user activation
     kwargs = {
-        'uidb64': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
-        'token': default_token_generator.make_token(user)
+            'uidb64': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+            'token': default_token_generator.make_token(user)
     }
     # create token link
     activation_url = reverse('userprofile:ActivateUserAccount', kwargs=kwargs)
@@ -360,7 +351,7 @@ def SendActivationEmail(request, user):
     email = EmailMultiAlternatives(
                                 subject, text_content,
                                 from_email, recipients
-                                )
+    )
     email.attach_alternative(html_content, 'text/html')
     email.send()
     # return a sent email page after sending
@@ -408,24 +399,27 @@ def SendVerificationEmail(request, user):
     recipients = [user.email]
     # Create token for user email verification
     kwargs = {
-        'uidb64': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
-        'token': default_token_generator.make_token(user)
+            'uidb64': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+            'token': default_token_generator.make_token(user)
     }
     # create token link
     verification_url = reverse('userprofile:EmailVerification', kwargs=kwargs)
     # Create full email verification link
-    verification_url = f'{request.scheme}://{request.get_host()}{verification_url}'
+    verification_url = '{0}://{1}{2}'.format(
+                                            request.scheme,
+                                            request.get_host(),
+                                            verification_url)
     # contents for email data
     context = {
-        'user': user.first_name,
-        'verification_url': verification_url
+            'user': user.first_name,
+            'verification_url': verification_url
     }
     # email sending settings
     html_content = render_to_string(template_name, context)
     email = EmailMultiAlternatives(
                                 subject, text_content,
                                 from_email, recipients
-                                )
+    )
     email.attach_alternative(html_content, 'text/html')
     email.send()
     # return a sent email page after sending
